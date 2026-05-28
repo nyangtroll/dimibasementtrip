@@ -920,6 +920,14 @@
                 const isUpvoted = upvBy.includes(myFp);
                 const isDownvoted = dwnBy.includes(myFp);
                 
+                // 🌐 URL 링크를 인식하여 사이트 로고(Favicon) 이미지 태그 생성 로직 추가
+                const faviconHtml = p.url ? (() => {
+                    try {
+                        const domain = new URL(p.url).hostname;
+                        return `<img src="https://www.google.com/s2/favicons?domain=${domain}&sz=32" alt="" style="width: 16px; height: 16px; border-radius: 3px; flex-shrink: 0; object-fit: contain;">`;
+                    } catch(e) { return ''; }
+                })() : '';
+
                 li.innerHTML = `
                     <div class="card-top">
                         <div class="link-info">
@@ -930,7 +938,7 @@
                                     <button class="delete-btn" onclick="deletePlace('${p.id}')">삭제</button>
                                 </div>
                             </div>
-                            <a href="${p.url}" target="_blank" class="link-anchor">${p.title} 🔗</a>
+                            <a href="${p.url}" target="_blank" class="link-anchor">${faviconHtml}${p.title} 🔗</a>
                             ${tagsHtml}
                             ${p.memo ? `<div class="link-memo">${p.memo}</div>` : ''}
                         </div>
@@ -1203,11 +1211,19 @@
                     `<div style="font-size:11px; color:var(--text-muted); margin-top:6px; font-weight:700;">👥 참여 멤버: ${sc.members.join(', ')}</div>` : 
                     `<div style="font-size:11px; color:var(--empty-msg); margin-top:6px;">👥 참여 멤버 없음</div>`;
 
+                // 🌐 일정표(TimeLine) 내부의 링크 제목 앞에도 사이트 로고가 연동되도록 동일 로직 추가 적용
+                const schedFaviconHtml = sc.url ? (() => {
+                    try {
+                        const domain = new URL(sc.url).hostname;
+                        return `<img src="https://www.google.com/s2/favicons?domain=${domain}&sz=32" alt="" style="width: 14px; height: 14px; border-radius: 2px; flex-shrink: 0; object-fit: contain;">`;
+                    } catch(e) { return ''; }
+                })() : '';
+
                 html += `
                     <div class="timeline-card">
                         ${sc.type === 'wishlist' && sc.uploader ? `<span class="uploader-tag" style="margin-bottom:6px; display:inline-block;">👤 추천: ${sc.uploader}</span>` : ''}
                         <div class="sched-title">
-                            ${sc.url ? `<a href="${sc.url}" target="_blank">${sc.title} 🔗</a>` : sc.title}
+                            ${sc.url ? `<a href="${sc.url}" target="_blank">${schedFaviconHtml}${sc.title} 🔗</a>` : sc.title}
                         </div>
                         ${sc.memo ? `<div class="sched-memo">${sc.memo}</div>` : ''}
                         ${membersHtml}
